@@ -17,7 +17,7 @@
 /app/build
 /app/libs/
 /app/build.gradle
-/app/local.properties
+/app/proguard-rules.pro
 /app/src/androidTest
 /app/src/main/res
 /app/src/main/AndroidManifest.xml
