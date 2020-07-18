@@ -1,12 +1,7 @@
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+/.idea
 .DS_Store
 /build
 /captures
@@ -22,7 +17,9 @@
 /app/build
 /app/libs/
 /app/build.gradle
+/app/local.properties
 /app/src/androidTest
 /app/src/main/res
 /app/src/main/AndroidManifest.xml
 src/main/res
+src/test/
