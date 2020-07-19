@@ -57,7 +57,12 @@ object UserHolder {
             val (salt, password) = params[2].split(":").run { first().trim() to last().trim() }
             val phone = params[3].parseNullIfBlank()
 
-            add(User(firstName, lastName, email, phone, password, salt))
+            User(firstName, lastName, email, phone, password, salt).also { user ->
+                if (!map.contains(user.login)) {
+                    map[user.login] = user
+                    add(user)
+                }
+            }
         }
     }
 
