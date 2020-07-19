@@ -39,7 +39,7 @@ class User private constructor(
         }
         get() = _login!!
 
-    private var salt: String? = null
+    var salt: String? = null
 
     private lateinit var passwordHash: String
 
@@ -69,6 +69,20 @@ class User private constructor(
         accessCode = code
         println("Phone passwordHash is $passwordHash")
         sendAccessCodeToUser(rawPhone, code)
+    }
+
+    // Csv constructor
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email: String?,
+        rawPhone: String?,
+        password: String,
+        salt: String
+    ) : this(firstName, lastName, email, rawPhone, mapOf("src" to "csv")) {
+        println("Secondary csv constructor")
+        this.salt = salt
+        this.passwordHash = password
     }
 
     init {
@@ -155,7 +169,7 @@ class User private constructor(
             }
         }
 
-        private fun String.fullNameToPair(): Pair<String, String?> = split(" ")
+        fun String.fullNameToPair(): Pair<String, String?> = split(" ")
             .filter { it.isNotBlank() }
             .run {
                 when (size) {

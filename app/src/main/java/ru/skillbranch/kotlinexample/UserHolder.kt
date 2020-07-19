@@ -2,6 +2,7 @@ package ru.skillbranch.kotlinexample
 
 import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
+import ru.skillbranch.kotlinexample.User.Factory.fullNameToPair
 
 @SuppressLint("DefaultLocale")
 object UserHolder {
@@ -47,6 +48,19 @@ object UserHolder {
         }
     }
 
+    fun importUsers(list: List<String>): List<User> = mutableListOf<User>().apply {
+        list.forEach { line ->
+            val params = line.trim().split(";")
+
+            val (firstName, lastName) = params[0].fullNameToPair()
+            val email = params[1].parseNullIfBlank()
+            val (salt, password) = params[2].split(":").run { first().trim() to last().trim() }
+            val phone = params[3].parseNullIfBlank()
+
+            add(User(firstName, lastName, email, phone, password, salt))
+        }
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun clearHolder() {
         map.clear()
@@ -56,4 +70,6 @@ object UserHolder {
         !login.contains('@') -> login.replace("""[^+\d]""".toRegex(), "")
         else -> login.toLowerCase()
     }.trim()
+
+    private fun String.parseNullIfBlank(): String? = if (isEmpty() || isBlank()) null else this
 }
