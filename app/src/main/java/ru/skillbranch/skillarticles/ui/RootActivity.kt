@@ -19,15 +19,15 @@ import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.viewmodels.ArticleState
 import ru.skillbranch.skillarticles.viewmodels.ArticleViewModel
-import ru.skillbranch.skillarticles.viewmodels.Notify
-import ru.skillbranch.skillarticles.viewmodels.ViewModelFactory
+import ru.skillbranch.skillarticles.viewmodels.base.Notify
+import ru.skillbranch.skillarticles.viewmodels.base.ViewModelFactory
 
 class RootActivity : AppCompatActivity() {
 
     private lateinit var viewModel: ArticleViewModel
 
     private var searchQuery: String? = null
-    private var isSearch: Boolean = false
+    private var isSearching: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +41,11 @@ class RootActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
         viewModel.observeState(this) {
             renderUi(it)
+
+            if (it.isSearch) {
+                isSearching = true
+                searchQuery = it.searchQuery
+            }
         }
 
         viewModel.observeNotifications(this) {
@@ -55,9 +60,10 @@ class RootActivity : AppCompatActivity() {
             queryHint = getString(R.string.search)
         }
 
-        if (isSearch) {
+        if (isSearching) {
             searchItem.expandActionView()
             searchView.setQuery(searchQuery, false)
+            searchView.clearFocus()
         }
 
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
@@ -143,9 +149,6 @@ class RootActivity : AppCompatActivity() {
         toolbar.title = data.title ?: "loading"
         toolbar.subtitle = data.category ?: "loading"
         if (data.categoryIcon != null) toolbar.logo = getDrawable(data.categoryIcon as Int)
-
-        searchQuery = data.searchQuery
-        isSearch = data.isSearch
     }
 
     private fun renderNotification(notify: Notify) {

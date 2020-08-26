@@ -1,5 +1,7 @@
 package ru.skillbranch.skillarticles.viewmodels
 
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
@@ -7,13 +9,16 @@ import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
 import ru.skillbranch.skillarticles.extensions.data.toAppSettings
 import ru.skillbranch.skillarticles.extensions.data.toArticlePersonalInfo
 import ru.skillbranch.skillarticles.extensions.format
+import ru.skillbranch.skillarticles.extensions.indexesOf
+import ru.skillbranch.skillarticles.viewmodels.base.BaseViewModel
+import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
+import ru.skillbranch.skillarticles.viewmodels.base.Notify
 
 class ArticleViewModel(
     private val articleId: String
 ) : BaseViewModel<ArticleState>(ArticleState()), IArticleViewModel {
 
     private val repository = ArticleRepository
-    private var menuIsShown: Boolean = false
 
     init {
         subscribeOnDataSource(getArticleData()) { article, state ->
@@ -52,25 +57,29 @@ class ArticleViewModel(
         }
     }
 
-    override fun getArticleContent(): LiveData<List<Any>?> =
-        repository.loadArticleContent(articleId)
-
-    override fun getArticleData(): LiveData<ArticleData?> =
-        repository.getArticle(articleId)
-
-    override fun getArticlePersonalInfo(): LiveData<ArticlePersonalInfo?> =
-        repository.loadArticlePersonalInfo(articleId)
-
-    override fun handleNightMode() = currentState.toAppSettings().run {
-        repository.updateSettings(copy(isDarkMode = !isDarkMode))
+    override fun getArticleContent(): LiveData<List<Any>?> {
+        return repository.loadArticleContent(articleId)
     }
 
-    override fun handleUpText() = currentState.toAppSettings().run {
-        repository.updateSettings(copy(isBigText = true))
+    override fun getArticleData(): LiveData<ArticleData?> {
+        return repository.getArticle(articleId)
     }
 
-    override fun handleDownText() = currentState.toAppSettings().run {
-        repository.updateSettings(copy(isBigText = false))
+    override fun getArticlePersonalInfo(): LiveData<ArticlePersonalInfo?> {
+        return repository.loadArticlePersonalInfo(articleId)
+    }
+
+    override fun handleNightMode() {
+        val settings = currentState.toAppSettings()
+        repository.updateSettings(settings.copy(isDarkMode = !settings.isDarkMode))
+    }
+
+    override fun handleUpText() {
+        repository.updateSettings(currentState.toAppSettings().copy(isBigText = true))
+    }
+
+    override fun handleDownText() {
+        repository.updateSettings(currentState.toAppSettings().copy(isBigText = false))
     }
 
     override fun handleBookmark() {
@@ -103,16 +112,40 @@ class ArticleViewModel(
         notify(Notify.ErrorMessage(msg, "OK", null))
     }
 
-    override fun handleToggleMenu() = updateState { state ->
-        state.copy(isShowMenu = !state.isShowMenu).also { menuIsShown = !state.isShowMenu }
+    override fun handleToggleMenu() {
+        updateState { state ->
+            state.copy(isShowMenu = !state.isShowMenu)
+        }
     }
 
-    override fun handleSearchMode(isSearch: Boolean) = updateState { state ->
-        state.copy(isSearch = isSearch)
+    override fun handleSearchMode(isSearch: Boolean) {
+        updateState { state ->
+            state.copy(isSearch = isSearch, isShowMenu = false, searchPosition = 0)
+        }
     }
 
-    override fun handleSearch(query: String?) = updateState { state ->
-        state.copy(searchQuery = query)
+    override fun handleSearch(query: String?) {
+        query ?: return
+
+        val result = (currentState.content.firstOrNull() as? String)
+            .indexesOf(query)
+            .map { it to it + query.length }
+
+        updateState { state ->
+            state.copy(searchQuery = query, searchResults = result, searchPosition = 0)
+        }
+    }
+
+    fun handleUpResult() {
+        updateState { state ->
+            state.copy(searchPosition = state.searchPosition.dec())
+        }
+    }
+
+    fun handleDownResult() {
+        updateState { state ->
+            state.copy(searchPosition = state.searchPosition.inc())
+        }
     }
 }
 
@@ -138,4 +171,26 @@ data class ArticleState(
     val poster: String? = null,
     val content: List<Any> = emptyList(),
     val reviews: List<Any> = emptyList()
-)
+) : IViewModelState {
+
+    override fun save(outState: Bundle) {
+        outState.putAll(
+            bundleOf(
+                "isSearch" to isSearch,
+                "searchQuery" to searchQuery,
+                "searchResults" to searchResults,
+                "searchPosition" to searchPosition
+            )
+        )
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun restore(savedState: Bundle): ArticleState {
+        return copy(
+            isSearch = savedState["isSearch"] as Boolean,
+            searchQuery = savedState["searchQuery"] as? String,
+            searchResults = savedState["searchResults"] as List<Pair<Int, Int>>,
+            searchPosition = savedState["searchPosition"] as Int
+        )
+    }
+}

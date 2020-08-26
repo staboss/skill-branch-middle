@@ -3,4 +3,5 @@
     <string name="dark_mode">Темный режим</string>
     <string name="loading">Loading…</string>
     <string name="search">Поиск</string>
+    <string name="not_found">Not found</string>
 </resources>

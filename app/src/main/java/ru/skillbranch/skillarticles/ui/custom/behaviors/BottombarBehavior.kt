@@ -9,11 +9,9 @@ import ru.skillbranch.skillarticles.ui.custom.Bottombar
 import kotlin.math.max
 import kotlin.math.min
 
-class BottombarBehavior : CoordinatorLayout.Behavior<Bottombar> {
+class BottombarBehavior() : CoordinatorLayout.Behavior<Bottombar>() {
 
-    constructor()
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet) : this()
 
     override fun onStartNestedScroll(
         coordinatorLayout: CoordinatorLayout,
@@ -24,6 +22,7 @@ class BottombarBehavior : CoordinatorLayout.Behavior<Bottombar> {
         type: Int
     ): Boolean = axes == ViewCompat.SCROLL_AXIS_VERTICAL
 
+    // TODO: ADD NEW LOGIC
     override fun onNestedPreScroll(
         coordinatorLayout: CoordinatorLayout,
         child: Bottombar,

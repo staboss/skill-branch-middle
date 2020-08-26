@@ -9,6 +9,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.ui.custom.behaviors.BottombarBehavior
 
+// TODO: ADD NEW LOGIC
 class Bottombar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
