@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ru.skillbranch.skillarticles.viewmodels.ArticleViewModel
 
-class ViewModelFactory(private val params: String) : ViewModelProvider.Factory {
+class ViewModelFactory(private val params: Any) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ArticleViewModel::class.java)) {
-            return ArticleViewModel(params) as T
+            return ArticleViewModel(params as String) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -18,7 +18,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.text.getSpans
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_root.*
 import kotlinx.android.synthetic.main.layout_bottombar.*
@@ -38,19 +37,15 @@ import ru.skillbranch.skillarticles.viewmodels.ArticleState
 import ru.skillbranch.skillarticles.viewmodels.ArticleViewModel
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 import ru.skillbranch.skillarticles.viewmodels.base.Notify
-import ru.skillbranch.skillarticles.viewmodels.base.ViewModelFactory
 
 class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
 
     override val layout: Int = R.layout.activity_root
 
-    override val viewModel: ArticleViewModel by lazy {
-        val vmFactory = ViewModelFactory("0")
-        ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
-    }
+    override val viewModel: ArticleViewModel by provideViewModel("0")
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    override val binding: ArticleBinding by lazy {
+    public override val binding: ArticleBinding by lazy {
         ArticleBinding()
     }
 
@@ -81,14 +76,17 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
             )
         }
 
-        renderSearchPosition(0)
+         renderSearchPosition(0)
     }
 
     override fun renderSearchPosition(searchPosition: Int) {
         val content = tv_text_content.text as Spannable
         val spans = content.getSpans<SearchSpan>()
 
-        content.getSpans<SearchFocusSpan>().forEach { content.removeSpan(it) }
+        content.getSpans<SearchFocusSpan>().forEach {
+            content.removeSpan(it)
+        }
+
         if (spans.isNotEmpty()) {
             val result = spans[searchPosition]
             Selection.setSelection(content, content.getSpanStart(result))
