@@ -132,7 +132,7 @@ class ArticleViewModel(
             .map { it to it + query.length }
 
         updateState { state ->
-            state.copy(searchQuery = query, searchResults = result, searchPosition = 0)
+            state.copy(searchQuery = query, searchResults = result)
         }
     }
 

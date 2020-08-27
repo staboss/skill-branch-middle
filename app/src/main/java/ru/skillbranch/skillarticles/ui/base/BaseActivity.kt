@@ -1,7 +1,6 @@
 package ru.skillbranch.skillarticles.ui.base
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.skillbranch.skillarticles.viewmodels.base.BaseViewModel
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
@@ -19,10 +18,12 @@ abstract class BaseActivity<T : BaseViewModel<out IViewModelState>> : AppCompatA
 
     abstract fun renderNotification(notify: Notify)
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(layout)
         setupViews()
+
+        binding.onFinishInflate()
         viewModel.observeState(this) { binding.bind(it) }
         viewModel.observeNotifications(this) { renderNotification(it) }
     }

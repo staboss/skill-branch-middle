@@ -55,7 +55,6 @@ abstract class BaseViewModel<T : IViewModelState>(initState: T) : ViewModel() {
     fun restoreState(savedState: Bundle) {
         state.value = currentState.restore(savedState) as T
     }
-
 }
 
 class Event<out E>(private val content: E) {
