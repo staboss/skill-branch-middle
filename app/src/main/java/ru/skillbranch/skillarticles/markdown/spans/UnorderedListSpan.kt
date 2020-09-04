@@ -1,4 +1,4 @@
-package ru.skillbranch.skillarticles.markdown.span
+package ru.skillbranch.skillarticles.markdown.spans
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -17,8 +17,7 @@ class UnorderedListSpan(
 ) : LeadingMarginSpan {
 
     override fun getLeadingMargin(first: Boolean): Int {
-        // TODO implement me
-        return 0
+        return (4 * bulletRadius + gapWidth).toInt()
     }
 
     override fun drawLeadingMargin(
@@ -35,10 +34,28 @@ class UnorderedListSpan(
         isFirstLine: Boolean,
         layout: Layout?
     ) {
-        // TODO implement me
+        if (isFirstLine) {
+            paint.withCustomColor {
+                canvas.drawCircle(
+                    gapWidth + currentMarginLocation + bulletRadius,
+                    (lineTop + lineBottom) / 2f,
+                    bulletRadius,
+                    paint
+                )
+            }
+        }
     }
 
     private inline fun Paint.withCustomColor(block: () -> Unit) {
-        // TODO implement me
+        val oldColor = color
+        val oldStyle = style
+
+        color = bulletColor
+        style = Paint.Style.FILL
+
+        block()
+
+        color = oldColor
+        style = oldStyle
     }
 }
