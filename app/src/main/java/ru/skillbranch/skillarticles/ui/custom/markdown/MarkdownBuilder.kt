@@ -21,7 +21,6 @@ import ru.skillbranch.skillarticles.ui.custom.spans.*
 class MarkdownBuilder(context: Context) {
 
     private val colorPrimary: Int = context.attrValue(R.attr.colorPrimary)
-    private val colorSurface: Int = context.attrValue(R.attr.colorSurface)
     private val colorDivider: Int = context.getColor(R.color.color_divider)
     private val colorSecondary: Int = context.attrValue(R.attr.colorSecondary)
     private val colorOnSurface: Int = context.attrValue(R.attr.colorOnSurface)
@@ -123,7 +122,7 @@ class MarkdownBuilder(context: Context) {
                 }
                 is Element.Link -> {
                     inSpans(
-                        IconLinkSpan(linkIcon, colorSecondary, gap, colorPrimary, strikeWidth),
+                        IconLinkSpan(linkIcon, gap, colorPrimary, strikeWidth),
                         URLSpan(element.link)
                     ) {
                         append(element.text)

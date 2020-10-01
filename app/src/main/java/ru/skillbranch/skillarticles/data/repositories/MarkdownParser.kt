@@ -394,8 +394,11 @@ sealed class Element {
 
 private fun Element.spread(): List<Element> {
     val elements = mutableListOf<Element>()
-    if (this.elements.isNotEmpty()) elements.addAll(this.elements.spread())
-    else elements.add(this)
+    if (this.elements.isNotEmpty()) {
+        elements.addAll(this.elements.spread())
+    } else {
+        elements.add(this)
+    }
     return elements
 }
 
@@ -408,8 +411,11 @@ private fun List<Element>.spread(): List<Element> {
 private fun Element.clearContent(): String {
     return StringBuilder().apply {
         val element = this@clearContent
-        if (element.elements.isEmpty()) append(element.text)
-        else element.elements.forEach { append(it.clearContent()) }
+        if (element.elements.isEmpty()) {
+            append(element.text)
+        } else {
+            element.elements.forEach { append(it.clearContent()) }
+        }
     }.toString()
 }
 
